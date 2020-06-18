@@ -7,7 +7,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from vehiclemodel import vehicle
 
-# Downloading vehicle model
+##############################################################################
+# Downloading and processing vehicle model
+##############################################################################
+
 vehicle_model = vehicle.vehicle_model_download('AudiR8.csv')
 
 # Define parameters of Acceleration event
@@ -46,10 +49,9 @@ plt.plot(torque.iloc[:,0],torque.iloc[:,1])
 plt.title('Torque vs RPM')
 plt.show()
 
-
 # Set a revlimit
 engine_stall_rpm = 1000
-revlimit = 6200
+revlimit = 7000
 idle_limit = 1000
 
 # Calculating constants
@@ -57,8 +59,10 @@ f_road_incl = car_mass*np.sin(road_incl*(3.14/180))
 rMR_ML = wheel_rad*(car_mass+wheel_mass)
 lengthR = (4*wheel_inertia)/wheel_rad 
 
+##############################################################################
+# Setting up and running simulation
+##############################################################################
 
-# Setting up simulation
 v_end = 90 # meters of acceleration in m/s
 v0 = 0 # Starting velocity of acceleration m/s
 v_step = 1 # Velocity step between calculations
@@ -188,14 +192,17 @@ for v in range(v0,v_end,v_step):
         results['timer'][i]  = v_step/results['new_acc_x'][i]
     else:
         results['timer'][i] = results['timer'][i-1] + v_step/results['new_acc_x'][i]
-    
+
     # Updating index
     i = i+1
 
+##############################################################################
+# Results
+##############################################################################
+print('Time:' ,round(results['timer'][i-1],2))
+print('Acc max:', round(max(results['new_acc_x']),2))
+print('Max gear', round(max(results['gear_used'])))
+
 plt.plot(results['vCar'],results['new_acc_x'])
 plt.title('Acceleration')
-plt.show()
-
-plt.plot(results['timer'],results['vCar'])
-plt.title('Time')
 plt.show()
